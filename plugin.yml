@@ -1,0 +1,5 @@
+name: InvSync
+main: com.plugin.invsync.InvSyncMain
+version: 0.1
+api-version: 1.21
+commands:

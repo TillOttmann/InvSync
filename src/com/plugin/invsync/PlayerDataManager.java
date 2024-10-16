@@ -12,8 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,8 +20,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 
 class PlayerDataManager {
 	private Connection conn;
@@ -31,6 +27,8 @@ class PlayerDataManager {
 	PlayerDataManager() {
 		conn = InvSyncMain.getDatabaseConnection();
 	}
+	
+	// TODO: Item-Slot und Hunger
 	
 	// Holt einen beliebigen Wert aus der Datenbank
 	// Diese generische Methode funktioniert, da die Tabellen alle dasselbe Schema
@@ -128,11 +126,13 @@ class PlayerDataManager {
 		Object effects = getValueFromDB("playerEffects", "effects", uuid(player));
 		if (effects instanceof String) {
 			String effectsString = (String) effects;
-			String[] effectsArray = (effectsString.substring(0, effectsString.length() -1)).split("\\|");
+			if (!effectsString.isEmpty()) {
+				String[] effectsArray = (effectsString.substring(0, effectsString.length() -1)).split("\\|");
 
-			for (String effect : effectsArray) {
-				PotionEffect potionEffect = new PotionEffect(deserialize(effect));
-				player.addPotionEffect(potionEffect);
+				for (String effect : effectsArray) {
+					PotionEffect potionEffect = new PotionEffect(deserialize(effect));
+					player.addPotionEffect(potionEffect);
+				}
 			}
 		}
 	}
@@ -220,7 +220,7 @@ class PlayerDataManager {
 			inventoryString = (String) inventory;
 		}
 		
-		if (!inventoryString.equals("")) {
+		if (!inventoryString.isEmpty()) {
 			String decodedInventoryString = decodeFromB64(inventoryString);
 			ArrayList<ItemStack> inventoryAsArrayList = new ArrayList<>();
 			String[] itemsAsStringArray = decodedInventoryString.split("\\|");

@@ -22,6 +22,9 @@ public class PlayerListener implements Listener {
     	manager.loadHealth(player);
     	manager.loadEffects(player);
     	manager.loadEC(player);
+    	manager.loadFoodLevel(player);
+    	manager.loadSaturation(player);
+    	manager.loadCurrentSlot(player);
     }
     
     @EventHandler
@@ -33,5 +36,8 @@ public class PlayerListener implements Listener {
     	manager.saveHealth(player);
     	manager.saveEffects(player);
     	manager.saveEC(player);
+    	manager.saveFoodLevel(player);
+    	manager.saveSaturation(player);
+    	manager.saveCurrentSlot(player);
     }
 }

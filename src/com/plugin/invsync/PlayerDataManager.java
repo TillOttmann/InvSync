@@ -28,8 +28,6 @@ class PlayerDataManager {
 		conn = InvSyncMain.getDatabaseConnection();
 	}
 	
-	// TODO: Item-Slot und Hunger
-	
 	// Holt einen beliebigen Wert aus der Datenbank
 	// Diese generische Methode funktioniert, da die Tabellen alle dasselbe Schema
 	// (UUID + DATA) haben
@@ -76,6 +74,35 @@ class PlayerDataManager {
 		}
 	}
 	
+	void loadSaturation(Player player) {
+		Object saturation = getValueFromDB("playerSaturationValues", "saturation", uuid(player));
+		if (saturation instanceof Float) player.setSaturation((Float) saturation);
+	}
+	
+	void saveSaturation(Player player) {
+		replaceValueIntoDB("playerSaturationValues", "saturation", player.getSaturation(), uuid(player));
+	}
+	
+	void loadFoodLevel(Player player) {
+		Object foodLevel = getValueFromDB("playerFoodLevels", "foodlevel", uuid(player));
+		if (foodLevel instanceof Integer) player.setFoodLevel((Integer) foodLevel);
+	}
+	
+	void saveFoodLevel(Player player) {
+		replaceValueIntoDB("playerFoodLevels", "foodlevel", player.getFoodLevel(), uuid(player));
+	}
+	void loadCurrentSlot(Player player) {
+		Object currentSlot = getValueFromDB("playerCurrentSlots", "currentslot", uuid(player));
+		if (currentSlot instanceof Integer) {
+			if ((Integer) currentSlot >= 0 && (Integer) currentSlot <= 8) {
+				player.getInventory().setHeldItemSlot((Integer) currentSlot);
+			}
+		}
+	}
+	
+	void saveCurrentSlot(Player player) {
+		replaceValueIntoDB("playerCurrentSlots", "currentslot", player.getInventory().getHeldItemSlot(), uuid(player));
+	}
 	// Holt sich die Inhalte der Enderchest aus der DB und decodiert sie
 	void loadEC(Player player) {
 		String ECString = "";
@@ -84,7 +111,7 @@ class PlayerDataManager {
 			ECString = (String) EC;
 		}
 		
-		if (!ECString.equals("")) {
+		if (!ECString.isEmpty()) {
 			String decodedECString = decodeFromB64(ECString);
 			ArrayList<ItemStack> ECAsArrayList = new ArrayList<>();
 			String[] itemsAsStringArray = decodedECString.split("\\|");

@@ -60,83 +60,30 @@ class DatabaseConnection {
 			stmt.execute("USE " + DBName);
 			stmt.clearWarnings();
 			
-			// Inventare
-			String createPlayerInventoryTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerInventories "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, inventory MEDIUMTEXT)";
-			stmt.executeUpdate(createPlayerInventoryTableIfNotExists);
+			String[] tableArray =  {
+					"playerAdvancements", "playerEffects", "playerEnderChests", "playerHealthValues",
+					"playerInventories", "playerLevels", "playerCurrentSlots", "playerSaturationValues",
+					"playerFoodLevels"
+					};
+			String[] columnArray = {
+					"advancements MEDIUMTEXT", "effects MEDIUMTEXT", "enderchest MEDIUMTEXT", 
+					"health DOUBLE", "inventory MEDIUMTEXT", "level INT", "currentslot TINYINT",
+					"saturation FLOAT", "foodlevel TINYINT"
+			};
+			for (int i = 0; i < tableArray.length; i++) {
+				String createTableIfNotExists = "CREATE TABLE IF NOT EXISTS "
+						+ tableArray[i] + " (uuid VARCHAR(36) PRIMARY KEY, "
+						+ columnArray[i] +")";
+				stmt.executeUpdate(createTableIfNotExists);
 
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerInventories' existiert bereits, Erstellung wird übersprungen");
+				if (stmt.getWarnings() != null) {
+					InvSyncMain.sendConsoleMessage("default", "Tabelle '" + tableArray[i] + "' existiert bereits, Erstellung wird übersprungen");
 
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerInventories' erfolgreich erstellt");
+				} else {
+					InvSyncMain.sendConsoleMessage("warning", "Tabelle '" + tableArray[i] + "' erfolgreich erstellt");
+				}
+				stmt.clearWarnings();
 			}
-			stmt.clearWarnings();
-			
-			// Advancements
-			String createPlayerAdvancementsTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerAdvancements "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, advancements MEDIUMTEXT)";
-			stmt.executeUpdate(createPlayerAdvancementsTableIfNotExists);
-
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerAdvancements' existiert bereits, Erstellung wird übersprungen");
-
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerAdvancements' erfolgreich erstellt");
-			}
-			stmt.clearWarnings();
-			
-			// Exp-Level
-			String createPlayerLevelsTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerLevels "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, level INT)";
-			stmt.executeUpdate(createPlayerLevelsTableIfNotExists);
-
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerLevels' existiert bereits, Erstellung wird übersprungen");
-
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerLevels' erfolgreich erstellt");
-			}
-			stmt.clearWarnings();
-			
-			// HP (Leben)
-			String createPlayerHealthValuesTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerHealthValues "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, health DOUBLE)";
-			stmt.executeUpdate(createPlayerHealthValuesTableIfNotExists);
-
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerHealthValues' existiert bereits, Erstellung wird übersprungen");
-
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerHealthValues' erfolgreich erstellt");
-			}
-			stmt.clearWarnings();
-			
-			// Effekte
-			String createPlayerEffectssTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerEffects "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, effects MEDIUMTEXT)";
-			stmt.executeUpdate(createPlayerEffectssTableIfNotExists);
-
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerEffects' existiert bereits, Erstellung wird übersprungen");
-
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerEffects' erfolgreich erstellt");
-			}
-			stmt.clearWarnings();
-			
-			// Effekte
-			String createPlayerEnderChestsTableIfNotExists = "CREATE TABLE IF NOT EXISTS playerEnderChests "
-				+ "(uuid VARCHAR(36) PRIMARY KEY, enderchest MEDIUMTEXT)";
-			stmt.executeUpdate(createPlayerEnderChestsTableIfNotExists);
-
-			if (stmt.getWarnings() != null) {
-				InvSyncMain.sendConsoleMessage("default", "Tabelle 'playerEnderChests' existiert bereits, Erstellung wird übersprungen");
-
-			} else {
-				InvSyncMain.sendConsoleMessage("warning", "Tabelle 'playerEnderChests' erfolgreich erstellt");
-			}
-			stmt.clearWarnings();
 
 			// Schliesst das Statement
 			stmt.close();

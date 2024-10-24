@@ -9,23 +9,45 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 class DatabaseConnection {
 
-	private Connection connection;
+	private Connection conn;
+	private String DBName;
 
 	// Konstruktor, der die angegebenen Daten aus der config.yml benutzt, um die
 	// Datenbankverbindung aufzubauen
 	protected DatabaseConnection() {
 
 		FileConfiguration config = InvSyncMain.getFileConfig();
-
+		Connection connection = null;
 		try {
-			String DBName = config.getString("DB_Name");
+			DBName = config.getString("DB_Name");
 			String DBUrl = "jdbc:mysql://" + config.getString("DB_Url");
 			String DBUser = config.getString("DB_User");
 			String DBPw = config.getString("DB_Pw");
 			connection = DriverManager.getConnection(DBUrl, DBUser, DBPw);
 
+			InvSyncMain.sendConsoleMessage("default", "SQL-Serververbindung erfolgreich aufgebaut");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		configureDatabase(connection);
+		
+		try { 
+			connection.close();
+			InvSyncMain.sendConsoleMessage("default", "SQL-Serververbindung erfolgreich geschlossen");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			InvSyncMain.sendConsoleMessage("error", "Fehler beim schließen der SQL-Serververbindung");
+		}
+		
+		try {
+			String DBUrl = "jdbc:mysql://" + config.getString("DB_Url") + "/" + DBName + "?autoReconnect=true";
+			String DBUser = config.getString("DB_User");
+			String DBPw = config.getString("DB_Pw");
+			conn = DriverManager.getConnection(DBUrl, DBUser, DBPw);
+
 			InvSyncMain.sendConsoleMessage("default", "Datenbankverbindung erfolgreich aufgebaut");
-			configureDatabase(DBName);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -34,10 +56,10 @@ class DatabaseConnection {
 
 	// Gibt die Datenbankverbindung als Connection Objekt weiter
 	protected Connection getDatabaseConnection() {
-		return connection;
+		return conn;
 	}
 
-	private void configureDatabase(String DBName) {
+	private void configureDatabase(Connection connection) {
 
 		try {
 			Statement stmt = connection.createStatement();
@@ -97,9 +119,9 @@ class DatabaseConnection {
 	// aufgerufen
 	protected void closeDatabaseConnection() {
 		
-		if (connection != null) {
+		if (conn != null) {
 			try {
-				connection.close();
+				conn.close();
 				InvSyncMain.sendConsoleMessage("default", "Datenbankverbindung erfolgreich geschlossen");
 
 			} catch (SQLException e) {

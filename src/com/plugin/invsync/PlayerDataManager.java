@@ -76,7 +76,7 @@ class PlayerDataManager {
 	
 	void loadSaturation(Player player) {
 		Object saturation = getValueFromDB("playerSaturationValues", "saturation", uuid(player));
-		if (saturation instanceof Float) player.setSaturation((Float) saturation);
+		if (saturation instanceof Float && saturation != null) player.setSaturation((Float) saturation);
 	}
 	
 	void saveSaturation(Player player) {
@@ -85,7 +85,7 @@ class PlayerDataManager {
 	
 	void loadFoodLevel(Player player) {
 		Object foodLevel = getValueFromDB("playerFoodLevels", "foodlevel", uuid(player));
-		if (foodLevel instanceof Integer) player.setFoodLevel((Integer) foodLevel);
+		if (foodLevel instanceof Integer && foodLevel != null) player.setFoodLevel((Integer) foodLevel);
 	}
 	
 	void saveFoodLevel(Player player) {
@@ -93,7 +93,7 @@ class PlayerDataManager {
 	}
 	void loadCurrentSlot(Player player) {
 		Object currentSlot = getValueFromDB("playerCurrentSlots", "currentslot", uuid(player));
-		if (currentSlot instanceof Integer) {
+		if (currentSlot instanceof Integer && currentSlot != null) {
 			if ((Integer) currentSlot >= 0 && (Integer) currentSlot <= 8) {
 				player.getInventory().setHeldItemSlot((Integer) currentSlot);
 			}
@@ -107,7 +107,7 @@ class PlayerDataManager {
 	void loadEC(Player player) {
 		String ECString = "";
 		Object EC = getValueFromDB("playerEnderChests", "enderchest",uuid(player));
-		if (EC instanceof String) {
+		if (EC instanceof String && EC != null) {
 			ECString = (String) EC;
 		}
 		
@@ -151,7 +151,11 @@ class PlayerDataManager {
 	// Sehe https://www.spigotmc.org/threads/de-serializing-potioneffect-objects.666375/
 	void loadEffects(Player player) {	
 		Object effects = getValueFromDB("playerEffects", "effects", uuid(player));
-		if (effects instanceof String) {
+		if (effects instanceof String && effects != null) {
+			 Collection<PotionEffect> effectsCollection = player.getActivePotionEffects();
+			 for (PotionEffect effect : effectsCollection) {
+				 player.removePotionEffect(effect.getType());
+			 }
 			String effectsString = (String) effects;
 			if (!effectsString.isEmpty()) {
 				String[] effectsArray = (effectsString.substring(0, effectsString.length() -1)).split("\\|");
@@ -178,7 +182,7 @@ class PlayerDataManager {
 	// Leben werden geladen
 	void loadHealth(Player player) {
 		Object health = getValueFromDB("playerHealthValues", "health", uuid(player));
-		if (health instanceof Double) player.setHealth((Double) health);
+		if (health instanceof Double && health != null) player.setHealth((Double) health);
 	}
 	
 	// Leben werden gespeichert
@@ -197,13 +201,13 @@ class PlayerDataManager {
 		replaceValueIntoDB("playerLevels", "level", player.getHealth(), uuid(player));
 	}
 	
-	// Läd die ddvancements aus der DB und dekodiert sie
+	// Läd die advancements aus der DB und dekodiert sie
 	// Ein Loop geht durch alle Advancements, checkt ob der Spieler sie laut Db hat, falls ja gibt er dem
 	// Spieler das advancement (bzw setzt die Erfüllung der Kriterien auf erfüllt, dadurch passiert nichts wenn
 	// das advancement auf diesem Server bereits in world/advancements/[uuid].json vorhanden ist)
 	void loadAdvancements(Player player) {
 		Object advancements = getValueFromDB("playerAdvancements", "advancements", uuid(player));
-		if (advancements instanceof String) {	
+		if (advancements instanceof String && advancements != null) {	
 			// Quelle: https://www.spigotmc.org/threads/clearing-every-advancement-a-player-has-on-the-server.473875/ (Maxx_Qc)
 			Iterator<Advancement> iterator = Bukkit.getServer().advancementIterator();
 			String decodedAdvancements = decodeFromB64((String) advancements);
@@ -243,7 +247,7 @@ class PlayerDataManager {
 	void loadInventory(Player player) {
 		String inventoryString = "";
 		Object inventory = getValueFromDB("playerInventories", "inventory",uuid(player));
-		if (inventory instanceof String) {
+		if (inventory instanceof String && inventory != null) {
 			inventoryString = (String) inventory;
 		}
 		

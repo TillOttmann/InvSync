@@ -5,11 +5,11 @@
 ## Features
 
 This plugin can save (and thus syncronize) the following data about any player inside a sql database:
-- Inventory
+- Inventory (and current held item slot)
 - Enderchest
 - Advancements
 - Experience
-- Health
+- Health, Hunger, Saturation
 - Effects
 
 ## Installation

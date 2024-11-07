@@ -61,12 +61,13 @@ class PlayerDataManager {
 		try {
 			PreparedStatement preparedStmt;
 			
-			String insertHealth = "REPLACE INTO " + table + " (uuid, " + column + ")"
-					+ " VALUES (?, ?)";
+			String insertHealth = "INSERT INTO " + table + " (uuid, " + column + ")"
+					+ " VALUES (?, ?) ON DUPLICATE KEY UPDATE " + column + "=?";
 			
 			preparedStmt = conn.prepareStatement(insertHealth);
 			preparedStmt.setString(1, uuid);
 			preparedStmt.setObject(2, value);
+			preparedStmt.setObject(3, value);
 			
 			preparedStmt.execute();
 		} catch (SQLException e) {
